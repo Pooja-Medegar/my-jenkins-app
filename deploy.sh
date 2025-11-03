@@ -1,25 +1,19 @@
 #!/bin/bash
-APP_DIR="/home/ec2-user/myapp"
+APP_DIR="/var/www/myapp"
 
 echo "🚀 Starting deployment..."
 
-# Step 1: Clean old code
-rm -rf $APP_DIR/*
-echo "✅ Old code removed."
+# Clean old files
+sudo rm -rf $APP_DIR/*
+sudo mkdir -p $APP_DIR
 
-# Step 2: Copy new build files
-cp -r /tmp/newbuild/* $APP_DIR/
-echo "✅ New code copied."
+# Copy new files from Jenkins workspace (transferred by scp)
+sudo cp -r /tmp/myapp/* $APP_DIR/
 
-# Step 3: Restart the app
-if pgrep node; then
-  pkill node
-  echo "🔁 Restarting Node.js app..."
-  nohup node $APP_DIR/server.js > app.log 2>&1 &
-elif pgrep python3; then
-  pkill python3
-  echo "🔁 Restarting Python app..."
-  nohup python3 $APP_DIR/app.py > app.log 2>&1 &
-fi
+# Move index.html to Nginx web root
+sudo cp $APP_DIR/index.html /usr/share/nginx/html/
 
-echo "🎉 Deployment complete!"
+# Restart Nginx
+sudo systemctl restart nginx
+
+echo "✅ Deployment completed successfully!"
