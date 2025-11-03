@@ -1,18 +1,10 @@
 #!/bin/bash
-set -e
-
 echo "Deploying app to EC2..."
 
-# Define app directory
-APP_DIR="/var/www/myapp"
+# Create target directory if not exists
+sudo mkdir -p /var/www/myapp
 
-# Remove old files
-rm -rf $APP_DIR/*
+# Copy application files
+sudo cp -r * /var/www/myapp/
 
-# Copy new build files from Jenkins workspace
-cp -r * $APP_DIR/
-
-# Restart Nginx (or Node.js/Python app if needed)
-systemctl restart nginx
-
-echo "Deployment successful!"
+echo "Deployment complete!"
