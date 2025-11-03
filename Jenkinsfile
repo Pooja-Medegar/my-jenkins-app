@@ -25,16 +25,12 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            mail to: 'your_email@example.com',
-                 subject: 'Build Successful!',
-                 body: 'The Jenkins pipeline build and deployment completed successfully.'
-        }
-        failure {
-            mail to: 'your_email@example.com',
-                 subject: 'Build Failed!',
-                 body: 'The Jenkins pipeline failed. Please check Jenkins logs.'
-        }
+   post {
+    success {
+        echo "Build Successful!"
     }
+    failure {
+        echo "Build Failed!"
+    }
+}
 }
