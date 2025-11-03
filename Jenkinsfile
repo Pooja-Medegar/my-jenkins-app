@@ -10,7 +10,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(['ec2-ssh']) {
+                sshagent(['deploy-key']) {
                     sh '''
                     echo "📦 Copying files to EC2..."
                     scp -o StrictHostKeyChecking=no -r * ec2-user@44.211.242.212:/tmp/myapp
