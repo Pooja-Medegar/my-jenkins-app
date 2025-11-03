@@ -4,33 +4,30 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Pooja-Medegar/my-jenkins-app.git'
+                git branch: 'main', url: 'https://github.com/Pooja-Medegar/my-jenkins-app.git'
             }
         }
 
-        stage('Build') {
+        stage('Deploy to EC2') {
             steps {
-                echo 'Building the app...'
-                sh 'ls -l'
-            }
-        }
-
-        stage('Deploy to Server') {
-            steps {
-                echo 'Deploying to target server...'
-                // Example:
-                // sh 'ssh -i /path/to/key.pem ec2-user@<server-ip> "bash /home/ec2-user/deploy.sh"'
+                sshagent(['ec2-ssh']) {
+                    sh '''
+                    echo "📦 Copying files to EC2..."
+                    scp -o StrictHostKeyChecking=no -r * ec2-user@44.211.242.212:/tmp/myapp
+                    echo "🚀 Running deploy script on EC2..."
+                    ssh -o StrictHostKeyChecking=no ec2-user@44.211.242.212 'bash /tmp/myapp/deploy.sh'
+                    '''
+                }
             }
         }
     }
 
-   post {
-    success {
-        echo "Build Successful!"
+    post {
+        success {
+            echo '✅ Deployment successful!'
+        }
+        failure {
+            echo '❌ Deployment failed!'
+        }
     }
-    failure {
-        echo "Build Failed!"
-    }
-}
 }
